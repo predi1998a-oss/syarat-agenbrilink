@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beranda — Agen BRILink</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;}
+        body {
+            background: linear-gradient(135deg, #003380 0%, #0056b3 50%, #0066cc 100%);
+            background-attachment: fixed; min-height: 100vh; padding: 20px 15px; position: relative;
+        }
+        body::before, body::after {
+            content: ''; position: fixed; width: 350px; height: 350px; border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,215,0,0.1) 0%, transparent 70%);
+            pointer-events: none; z-index: 0;
+        }
+        body::before { top: -150px; right: -100px; }
+        body::after { bottom: -150px; left: -100px; }
+        .container { max-width: 580px; margin: 0 auto; position: relative; z-index: 1; }
+
+        /* HEADER */
+        .header { text-align: center; padding: 30px 20px 25px; margin-bottom: 24px; }
+        .header__logo {
+            width: 90px; height: 90px; background: #fff; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; margin: 0 auto 18px;
+            box-shadow: 0 8px 25px rgba(255,215,0,0.35);
+        }
+        .header__logo i { font-size: 42px; color: #003380; }
+        .header__title { font-size: 28px; font-weight: 800; color: #fff; margin-bottom: 8px; }
+        .header__subtitle { font-size: 15.5px; color: #ffd700; line-height: 1.5; }
+
+        /* INTRO CARD */
+        .intro-card {
+            background: #fff; border-radius: 18px; padding: 26px 24px; margin-bottom: 22px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.25); border-top: 5px solid #ffd700; position: relative;
+        }
+        .intro-card h2 { font-size: 19px; color: #003380; margin-bottom: 14px; font-weight: 800; text-align: center; }
+        .intro-card p { font-size: 14.5px; color: #475569; line-height: 1.8; text-align: center; }
+
+        /* CHOICE */
+        .choice-title { text-align: center; color: #fff; font-size: 17px; font-weight: 700; margin-bottom: 18px; }
+        .option-card {
+            background: #fff; border-radius: 16px; padding: 24px 22px; margin-bottom: 16px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.18); cursor: pointer; transition: all 0.3s ease;
+            text-decoration: none; display: block; border-left: 5px solid transparent;
+        }
+        .option-card:hover { transform: translateY(-4px); box-shadow: 0 12px 35px rgba(0,0,0,0.25); }
+        .option-card--daftar { border-left-color: #28a745; }
+        .option-card--daftar:hover { border-left-color: #218838; background: linear-gradient(to right, #f0fdf4, #fff); }
+        .option-card--edc { border-left-color: #0056b3; }
+        .option-card--edc:hover { border-left-color: #003380; background: linear-gradient(to right, #f0f7ff, #fff); }
+
+        .option-card__header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+        .option-card__icon {
+            width: 54px; height: 54px; border-radius: 14px; display: flex; align-items: center; justify-content: center;
+            font-size: 26px; flex-shrink: 0;
+        }
+        .option-card--daftar .option-card__icon { background: linear-gradient(135deg, #28a745, #218838); color: #fff; }
+        .option-card--edc .option-card__icon { background: linear-gradient(135deg, #0056b3, #003380); color: #ffd700; }
+        .option-card__title { font-size: 18px; font-weight: 800; color: #1e293b; }
+        .option-card__subtitle { font-size: 13px; color: #64748b; margin-top: 3px; }
+        .option-card__desc { font-size: 14px; color: #475569; line-height: 1.7; padding-left: 70px; margin-top: 8px; }
+
+        /* INFO BOX */
+        .info-box {
+            background: rgba(255,255,255,0.12); backdrop-filter: blur(10px); border-radius: 14px;
+            padding: 20px; margin-bottom: 24px; border: 1px solid rgba(255,255,255,0.18);
+        }
+        .info-box__row { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 10px; }
+        .info-box__row i { color: #ffd700; font-size: 16px; margin-top: 2px; flex-shrink: 0; }
+        .info-box__row span { font-size: 14px; color: #fff; line-height: 1.6; }
+        .info-box__row span strong { color: #ffd700; }
+
+        /* FOOTER */
+        .footer { text-align: center; padding: 20px; color: rgba(255,255,255,0.7); font-size: 13px; line-height: 1.6; }
+        .footer strong { color: #ffd700; }
+
+        @media (max-width: 480px) {
+            .header__title { font-size: 24px; }
+            .option-card__desc { padding-left: 0; margin-top: 10px; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <div class="header__logo"><i class="fas fa-university"></i></div>
+        <h1 class="header__title">Agen BRILink</h1>
+        <p class="header__subtitle">Layanan Resmi Bank BRI — Buka Peluang Usaha Baru!</p>
+    </div>
+
+    <div class="intro-card">
+        <h2>🏦 Selamat Datang di Layanan Agen BRILink</h2>
+        <p>Silakan pilih layanan sesuai kebutuhan Anda. Apakah ingin <strong>mendaftar menjadi Agen BRILink</strong> baru, atau sudah menjadi agen dan ingin <strong>mengajukan mesin EDC</strong> untuk melengkapi layanan?</p>
+    </div>
+
+    <p class="choice-title">👇 Silakan Pilih Layanan:</p>
+
+    <!-- OPSI 1: PENDAFTARAN AGEN BARU -->
+    <a href="form-pendaftaran-agen.html" class="option-card option-card--daftar">
+        <div class="option-card__header">
+            <div class="option-card__icon"><i class="fas fa-user-plus"></i></div>
+            <div>
+                <h3 class="option-card__title">Pendaftaran Agen BRILink</h3>
+                <p class="option-card__subtitle">📌 Belum menjadi agen? Daftar di sini</p>
+            </div>
+        </div>
+        <p class="option-card__desc">
+            <strong>Jadilah Agen BRILink resmi dari Bank BRI!</strong><br>
+            Buka layanan transaksi perbankan: setor/tarik tunai, transfer, bayar tagihan, top-up, dan lainnya. Dapatkan komisi setiap transaksi & peluang usaha berkembang pesat!
+        </p>
+    </a>
+
+    <!-- OPSI 2: PENGAJUAN MESIN EDC -->
+    <a href="form-pengajuan-edc.html" class="option-card option-card--edc">
+        <div class="option-card__header">
+            <div class="option-card__icon"><i class="fas fa-credit-card"></i></div>
+            <div>
+                <h3 class="option-card__title">Pengajuan Mesin EDC BRILink</h3>
+                <p class="option-card__subtitle">📌 Sudah jadi agen? Ajukan mesin EDC</p>
+            </div>
+        </div>
+        <p class="option-card__desc">
+            <strong>Lengkapi layanan dengan mesin EDC & QRIS!</strong><br>
+            Terima pembayaran kartu debit/kredit, QRIS, dan pembayaran non-tunai lainnya. Tingkatkan omzet usaha & berikan kemudahan pembayaran bagi pelanggan Anda!
+        </p>
+    </a>
+
+    <div class="info-box">
+        <div class="info-box__row"><i class="fas fa-circle-info"></i><span><strong>Catatan:</strong> Pendaftaran Agen BRILink diperlukan terlebih dahulu sebelum bisa mengajukan mesin EDC.</span></div>
+        <div class="info-box__row"><i class="fas fa-shield-halved"></i><span><strong>Keamanan:</strong> Seluruh data dilindungi dan hanya digunakan untuk verifikasi resmi Bank BRI.</span></div>
+    </div>
+
+    <div class="footer">
+        <p>🏦 Layanan Resmi — <strong>Bank Rakyat Indonesia (BRI)</strong></p>
+        <p>© 2026 Agen BRILink. Semua Hak Dilindungi.</p>
+    </div>
+</div>
+</body>
+</html>
